@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+	<meta name="viewport" content="width=device-width"/>
+	<title>lightweight remote autocomplete / autosuggest with HTML5 datalist</title>
+	<style>
+		html, body {min-height: 100%;}
+		body {
+			max-width: 900px;
+			margin: auto;
+		}
+		.example {
+			border: 1px solid #ccc;
+			padding: 10px;
+			margin: 10px 0;
+		}
+		label > span {
+			display: block;
+		}
+		.polyfill-type {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+		}
+	</style>
+
+	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+	<!-- optional for old browser support or to enhance look and feel -->
+	<script src="http://afarkas.github.io/webshim/js-webshim/minified/polyfiller.js"></script>
+
+
+	<script>
+		(function () {
+			var stateMatches = {
+				'true': true,
+				'false': false,
+				'auto': 'auto'
+			};
+			var enhanceState = (location.search.match(/enhancelist\=([true|auto|false]+)/) || ['', 'auto'])[1];
+			$(function () {
+				$('.polyfill-type select')
+						.val(enhanceState)
+						.on('change', function () {
+							location.search = 'enhancelist=' + $(this).val();
+						})
+				;
+			});
+
+			webshims.setOptions('forms', {
+				customDatalist: stateMatches[enhanceState]
+			});
+		})();
+
+		webshims.polyfill('forms');
+
+
+	</script>
+	<!-- end optional polyfill/enhance -->
+
+	<script src="../dist/remote-list.min.js"></script>
+
+</head>
+
+<body>
+
+
+<div class="example">
+<label>
+	<span>states of amercia list</span>
+	<input data-remote-list="https://jsonplaceholder.typicode.com/albums/1"
+		   data-list-highlight="true"
+		   data-list-value-completion="true"
+		   class="static-remote" type="text" />
+</label>
+<script>
+	$(function () {
+		$('input.static-remote').remoteList({
+			minLength: 0,
+			maxLength: 3,
+			select: function(){
+				if(window.console){
+					console.log($(this).remoteList('selectedOption'), $(this).remoteList('selectedData'))
+				}
+			}
+		});
+	});
+</script>
+
+
+
+</div>
+
+</body>
+</html>
